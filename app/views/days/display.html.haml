@@ -1,0 +1,46 @@
+%h1.col-md-12
+  = (@day.day.strftime("%B %d, %Y") || "") + " " + (@day.lecture || "")
+
+%h2.col-md-12
+  Questions
+%table.table.table-hover#questions
+  - @questions.each do |q|
+    %tr.question
+      %td
+        %h3.col-md-12
+          = (q.user || "") + ": " + (q.question || "")
+        .pull-right
+          = q.votes
+          = link_to "Upvote", '#', class: 'upvote', "data-q" => q.id
+        .col-md-8.col-md-offset-1
+          %table.table.table-striped
+            - q.comments.each do |c|
+              %tr
+                %td{width: "80%"}= (c.comment || "")
+                %td{width: "20%"}
+                  by
+                  = (c.user || "")
+        %new_comment.col-md-8.col-md-offset-1
+          = form_for(q.comments.build) do |f|
+            = f.label :comment
+            = f.text_field :comment, size: 50
+
+            = f.label :user
+            = f.text_field :user
+
+            = f.hidden_field(:question, value: q.id)
+          
+            = f.submit "Submit comment", :class => "btn btn-primary"
+
+
+#new_question.col-md-6
+  = form_for(@day.questions.build) do |f|
+    = f.label :question
+    = f.text_area :question, class: 'form-control'
+    %br
+    = f.label :user
+    = f.text_field :user, class: 'form-control'
+
+    = f.hidden_field(:day, value: @day.id)
+  
+    = f.submit "Submit question", :class => "btn btn-large btn-primary"
